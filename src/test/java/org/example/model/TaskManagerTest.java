@@ -2,6 +2,7 @@ package org.example.model;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -153,5 +154,92 @@ public class TaskManagerTest {
             result.add(new Task(99, "new task"));
         });
     }
+
+    @Test
+    void replacesOldTasksToNewTasks() {
+        TaskManager manager = new TaskManager();
+        Task firstTask = new Task(1, "clean room");
+        Task secondTask = new Task(2, "clean hall");
+
+        manager.addTask(firstTask);
+        manager.addTask(secondTask);
+
+        manager.completeTaskById(1);
+
+        assertEquals(List.of(firstTask, secondTask), manager.getTasks());
+
+        Task newFirstTask = new Task(1, "new task");
+        List<Task> result = List.of(newFirstTask, secondTask);
+
+        manager.replaceTasks(result);
+
+        assertEquals(List.of(newFirstTask, secondTask), manager.getTasks());
+        assertEquals(firstTask.getId(), newFirstTask.getId());
+        assertFalse(firstTask.equals(newFirstTask));
+    }
+
+    @Test
+    void rejectsDuplicateIdsWithoutChangingExistingTasks() {
+        TaskManager manager = new TaskManager();
+        Task firstTask = new Task(1, "clean room");
+        Task secondTask = new Task(2, "clean hall");
+
+        manager.addTask(firstTask);
+        manager.addTask(secondTask);
+
+        manager.completeTaskById(1);
+
+        assertEquals(List.of(firstTask, secondTask), manager.getTasks());
+
+        Task newFirstTask = new Task(1, "new task");
+        Task newSecondTask = new Task(1, "new task");
+        List<Task> result = List.of(newFirstTask, newSecondTask);
+
+        assertThrows(IllegalArgumentException.class, () -> manager.replaceTasks(result));
+
+        assertEquals(List.of(firstTask, secondTask), manager.getTasks());
+    }
+
+    @Test
+    void clearsTasksWhenReplacementIsEmpty() {
+        TaskManager manager = new TaskManager();
+        Task firstTask = new Task(1, "clean room");
+        Task secondTask = new Task(2, "clean hall");
+
+        manager.addTask(firstTask);
+        manager.addTask(secondTask);
+
+        manager.completeTaskById(1);
+
+        assertEquals(List.of(firstTask, secondTask), manager.getTasks());
+
+        manager.replaceTasks(List.of());
+
+        assertEquals(List.of(), manager.getTasks());
+    }
+
+    @Test
+    void rejectsNullTaskWithoutChangingExistingTasks() {
+        TaskManager manager = new TaskManager();
+        Task firstTask = new Task(1, "clean room");
+        Task secondTask = new Task(2, "clean hall");
+
+        manager.addTask(firstTask);
+        manager.addTask(secondTask);
+
+        manager.completeTaskById(1);
+
+        assertEquals(List.of(firstTask, secondTask), manager.getTasks());
+
+        Task newFirstTask = new Task(1, "new task");
+        ArrayList<Task> result = new ArrayList<>();
+        result.add(newFirstTask);
+        result.add(null);
+
+        assertThrows(IllegalArgumentException.class, () -> manager.replaceTasks(result));
+
+        assertEquals(List.of(firstTask, secondTask), manager.getTasks());
+    }
+
 }
 

@@ -1,9 +1,6 @@
 package org.example.model;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class TaskManager {
     private final List<Task> tasks = new ArrayList<>();
@@ -68,6 +65,18 @@ public class TaskManager {
             }
         }
         return Optional.empty();
+    }
+
+    public void replaceTasks(List<Task> newTasks) {
+        if (newTasks == null) {
+            throw new IllegalArgumentException("New List can't be null");
+        }
+        TaskManager validatedTasks = new TaskManager();
+        for (Task task : newTasks) {
+                validatedTasks.addTask(task);
+        }
+        this.tasks.clear();
+        this.tasks.addAll(validatedTasks.getTasks());
     }
 
 }

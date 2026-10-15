@@ -175,7 +175,7 @@ public class TaskManagerTest {
 
         assertEquals(List.of(newFirstTask, secondTask), manager.getTasks());
         assertEquals(firstTask.getId(), newFirstTask.getId());
-        assertFalse(firstTask.equals(newFirstTask));
+        assertNotEquals(firstTask, newFirstTask);
     }
 
     @Test
@@ -239,6 +239,44 @@ public class TaskManagerTest {
         assertThrows(IllegalArgumentException.class, () -> manager.replaceTasks(result));
 
         assertEquals(List.of(firstTask, secondTask), manager.getTasks());
+    }
+
+    @Test
+    void deletesCompletedTasksWithoutChangingExistingTasks() {
+        TaskManager manager = new TaskManager();
+        Task firstTask = new Task(1, "clean room");
+        Task secondTask = new Task(2, "clean hall");
+        Task thirdTask = new Task(3, "vacuum bedroom");
+        Task fourthTask = new Task(4, "wash dishes");
+
+        manager.addTask(firstTask);
+        manager.addTask(secondTask);
+        manager.addTask(thirdTask);
+        manager.addTask(fourthTask);
+        manager.completeTaskById(2);
+        manager.completeTaskById(3);
+
+
+
+        assertEquals(2, manager.deleteCompletedTasks());
+        assertEquals(List.of(firstTask, fourthTask), manager.getTasks());
+        assertFalse(firstTask.isDone());
+        assertFalse(fourthTask.isDone());
+    }
+
+    @Test
+    void deletesNothingWhenThereAreNoCompletedTasks() {
+        TaskManager manager = new TaskManager();
+        Task firstTask = new Task(1, "clean room");
+        Task secondTask = new Task(2, "clean hall");
+
+        manager.addTask(firstTask);
+        manager.addTask(secondTask);
+
+        assertEquals(0, manager.deleteCompletedTasks());
+        assertEquals(List.of(firstTask, secondTask), manager.getTasks());
+        assertFalse(firstTask.isDone());
+        assertFalse(secondTask.isDone());
     }
 
 }

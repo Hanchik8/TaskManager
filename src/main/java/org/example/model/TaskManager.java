@@ -1,5 +1,6 @@
 package org.example.model;
 
+import java.lang.reflect.Array;
 import java.util.*;
 
 public class TaskManager {
@@ -49,7 +50,7 @@ public class TaskManager {
     public boolean deleteTaskById(int id) {
         Iterator<Task> it = this.tasks.iterator();
         while (it.hasNext()) {
-           int taskId = it.next().getId();
+            int taskId = it.next().getId();
             if (taskId == id) {
                 it.remove();
                 return true;
@@ -73,10 +74,16 @@ public class TaskManager {
         }
         TaskManager validatedTasks = new TaskManager();
         for (Task task : newTasks) {
-                validatedTasks.addTask(task);
+            validatedTasks.addTask(task);
         }
         this.tasks.clear();
         this.tasks.addAll(validatedTasks.getTasks());
+    }
+
+    public int deleteCompletedTasks() {
+        int initialSize = tasks.size();
+        tasks.removeIf(Task::isDone);
+        return initialSize - tasks.size();
     }
 
 }

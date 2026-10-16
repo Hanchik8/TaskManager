@@ -54,6 +54,7 @@ public class TaskConsole {
                 case "save" -> saveTasks();
                 case "load" -> loadTasks();
                 case "help" -> showHelp();
+                case "clear-completed" -> deleteCompletedTasks();
                 default -> output.println("Unknown command");
             }
 
@@ -237,8 +238,12 @@ public class TaskConsole {
                 load - Replace current tasks with tasks from a file; enter the file path when prompted.
                 help - Show this help.
                 exit - Exit the program.
+                clear-completed - Delete all completed tasks.
                 """);
     }
 
+    private void deleteCompletedTasks() {
+        output.println("Completed tasks deleted: " +manager.deleteCompletedTasks());
+    }
 
 }

@@ -617,14 +617,58 @@ public class TaskConsoleTest {
                 load - Replace current tasks with tasks from a file; enter the file path when prompted.
                 help - Show this help.
                 exit - Exit the program.
+                clear-completed - Delete all completed tasks.
                 """));
         assertFalse(actualOutput.contains("Unknown command"));
         assertFalse(actualOutput.contains("Error:"));
         assertTrue(actualOutput.contains("[x] 99: clean room"));
     }
 
+    @Test
+    void deletesCompletedTasksWithoutChangingExistingTasks() {
+        TaskManager manager = new TaskManager();
+        Task firstTask = new Task(1, "clean room");
+        Task secondTask = new Task(2, "clean hall");
+        Task thirdTask = new Task(3, "vacuum bedroom");
+        Task fourthTask = new Task(4, "wash dishes");
 
+        manager.addTask(firstTask);
+        manager.addTask(secondTask);
+        manager.addTask(thirdTask);
+        manager.addTask(fourthTask);
+        manager.completeTaskById(2);
+        manager.completeTaskById(3);
 
+        String actualOutput = runConsole("clear-completed\nlist\nexit\n", manager);
+
+        assertTrue(actualOutput.contains("Completed tasks deleted: 2"));
+        assertTrue(actualOutput.contains("[ ] 1: clean room"));
+        assertFalse(actualOutput.contains("[x] 2: clean hall"));
+        assertFalse(actualOutput.contains("[x] 3: vacuum bedroom"));
+        assertTrue(actualOutput.contains("[ ] 4: wash dishes"));
+        assertFalse(actualOutput.contains("Unknown command"));
+        assertFalse(actualOutput.contains("Error:"));
+        assertEquals(List.of(firstTask, fourthTask), manager.getTasks());
+    }
+
+    @Test
+    void deletesCompletedTasksWhenTheyAreMissing() {
+        TaskManager manager = new TaskManager();
+        Task firstTask = new Task(1, "clean room");
+        Task secondTask = new Task(2, "clean hall");
+
+        manager.addTask(firstTask);
+        manager.addTask(secondTask);
+
+        String actualOutput = runConsole("clear-completed\nlist\nexit\n", manager);
+
+        assertTrue(actualOutput.contains("Completed tasks deleted: 0"));
+        assertTrue(actualOutput.contains("[ ] 1: clean room"));
+        assertTrue(actualOutput.contains("[ ] 2: clean hall"));
+        assertFalse(actualOutput.contains("Unknown command"));
+        assertFalse(actualOutput.contains("Error:"));
+        assertEquals(List.of(firstTask, secondTask), manager.getTasks());
+    }
 
 
     private String runConsole(String input, TaskManager manager) {

@@ -28,6 +28,8 @@ public class TaskManagerTest {
         manager.addTask(firstTask);
 
         assertThrows(IllegalArgumentException.class, () -> manager.addTask(secondTask));
+
+        assertEquals(List.of(firstTask), manager.getTasks());
     }
 
    @Test

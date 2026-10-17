@@ -35,11 +35,9 @@ public class TaskManager {
     public void addTask(Task task) {
         if (task == null) throw new IllegalArgumentException("Task can't be null");
         int newTaskId = task.getId();
-        for (Task existingTask : this.tasks) {
-            if (existingTask.getId() == newTaskId) {
-                throw new IllegalArgumentException("Task with ID " + newTaskId + " already exists.");
-            }
-        }
+        findTaskById(newTaskId).ifPresent(existingTask -> {
+            throw new IllegalArgumentException("Task with ID " + newTaskId + " already exists.");
+        });
         this.tasks.add(task);
     }
 

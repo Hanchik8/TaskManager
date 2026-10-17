@@ -670,6 +670,33 @@ public class TaskConsoleTest {
         assertEquals(List.of(firstTask, secondTask), manager.getTasks());
     }
 
+    @Test
+    void restoresSavedTasksInNewConsoleSession (@TempDir Path tempDir) {
+        TaskManager manager = new TaskManager();
+        Path filePath = tempDir.resolve("saved.txt");
+        String firstOutput = runConsole("add\n1\nread book\nadd\n2\nwash dishes\ncomplete\n1\nsave\n" + filePath + "\nexit\n", manager);
+
+        TaskManager restoredManager = new TaskManager();
+        String secondOutput = runConsole("load\n" + filePath + "\nlist\nexit\n", restoredManager);
+
+        assertTrue(Files.exists(filePath));
+        assertEquals(
+                new TaskSnapshot(1, "read book", true),
+                TaskSnapshot.fromTask(restoredManager.getTasks().getFirst()));
+        assertEquals(
+                new TaskSnapshot(2, "wash dishes", false),
+                TaskSnapshot.fromTask(restoredManager.getTasks().getLast()));
+        assertEquals(2, restoredManager.getTasks().size());
+        assertFalse(firstOutput.contains("Unknown command"));
+        assertFalse(firstOutput.contains("Error:"));
+        assertFalse(secondOutput.contains("Unknown command"));
+        assertFalse(secondOutput.contains("Error:"));
+        assertTrue(firstOutput.contains("Tasks saved"));
+        assertTrue(secondOutput.contains("Tasks loaded"));
+        assertTrue(secondOutput.contains("[x] 1: read book"));
+        assertTrue(secondOutput.contains("[ ] 2: wash dishes"));
+    }
+
 
     private String runConsole(String input, TaskManager manager) {
         Scanner scanner = new Scanner(input);

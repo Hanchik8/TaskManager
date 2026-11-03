@@ -557,7 +557,7 @@ public class TaskConsoleTest {
                 new TaskSnapshot(99, "clean room", true),
                 TaskSnapshot.fromTask(actualTasks.getFirst()));
         assertFalse(actualOutput.contains("Tasks loaded"));
-        assertTrue(actualOutput.contains("Error: could not load tasks."));
+        assertTrue(actualOutput.contains("Error: could not load tasks. Invalid boolean value for key: task.1.done"));
         assertFalse(actualOutput.contains("[x] 1: Тест"));
         assertFalse(actualOutput.contains("[ ] 2: Test"));
         assertTrue(actualOutput.contains("[x] 99: clean room"));

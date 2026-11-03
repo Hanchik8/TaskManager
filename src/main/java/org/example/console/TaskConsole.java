@@ -5,16 +5,13 @@ import org.example.model.Task;
 import org.example.model.TaskManager;
 import org.example.presentation.TaskFormatter;
 import org.example.storage.TaskFileStorage;
-import org.example.storage.TaskSnapshot;
 
 import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.Scanner;
 
@@ -220,7 +217,7 @@ public class TaskConsole {
             manager.replaceTasks(loadedTasks);
             output.println("Tasks loaded");
         } catch (IOException e) {
-           output.println("Error: could not load tasks.");
+           output.println("Error: could not load tasks. " + e.getMessage());
         }
     }
 
